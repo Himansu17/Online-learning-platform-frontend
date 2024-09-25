@@ -1,0 +1,8 @@
+.users{
+    width: 350px;
+    overflow: auto;
+    white-space: nowrap;
+    margin: 20px auto;
+    min-height: 80vh;
+    border: 1px solid gray;
+}
