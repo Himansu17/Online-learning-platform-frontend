@@ -5,8 +5,11 @@ import { IoHomeOutline } from "react-icons/io5";
 import { FaBook } from "react-icons/fa";
 import { FaUserAlt } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
+import { UserData } from '../../context/UserContext';
 
 const Sidebar = () => {
+    const {user} =UserData();
+
   return (
     <div className="sidebar">
         <ul>
@@ -26,7 +29,9 @@ const Sidebar = () => {
                     <span>Courses</span>
                 </Link>
             </li>
-            <li>
+            {
+                user && user.mainrole === "superadmin" && (
+                    <li>
                 <Link to={'/admin/users'}>
                     <div className="icon">
                     <FaUserAlt />
@@ -34,6 +39,9 @@ const Sidebar = () => {
                     <span>Users</span>
                 </Link>
             </li>
+                )
+            }
+            
             <li>
                 <Link to={'/account'}>
                     <div className="icon">

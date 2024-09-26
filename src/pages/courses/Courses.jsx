@@ -5,7 +5,7 @@ import CourseCard from '../../components/coursecard/CourseCard';
 
 const Courses = () => {
   const {courses} = CourseData();
-  console.log(courses);
+  //console.log(courses);
   return (
     <div className="courses">
       <h2>Available Courses</h2>

@@ -5,6 +5,7 @@ import axios from 'axios';
 import {server} from '../../main';
 import Loading from '../../components/loading/Loading';
 import toast from 'react-hot-toast';
+import { TiTick } from "react-icons/ti";
 
 const Lecture = ({ user }) => {
     const [lectures, setLectures] = useState([]);
@@ -110,14 +111,54 @@ const Lecture = ({ user }) => {
         }
     }
 
+    const [completed, setCompleted] = useState("")
+    const [completedLec, setCompletedLec] = useState("")
+    const [lectLength,setLectLength] = useState("")
+    const [progress, setProgress] = useState([]);
 
+    async function fetchProgress () {
+        try {
+            const {data} = await axios.get(`${server}/api/user/progress?course=${params.id}`,{
+                headers: {
+                    token: localStorage.getItem("token"),
+                }
+            })
+            setCompleted(data.courseProgressPercentage);
+            setCompletedLec(data.completedLectures);
+            setLectLength(data.allLectures);
+            setProgress(data.progress);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const addProgress = async(id) => {
+        try {
+            const {data} = await axios.post(`${server}/api/user/progress?course=${params.id}&lectureId=${id}`,{},{
+                headers: {
+                    token: localStorage.getItem("token"),
+                }
+            })
+            console.log(data.message);
+            fetchProgress();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+//console.log(progress);
     useEffect(()=>{
-        fetchLectures()
+        fetchLectures();
+        fetchProgress();
     },[])
   return (
     <>
     {loading ? ( <Loading /> ) : (
          <> 
+         <div className="progress">
+            Lecture completed - {completedLec} out of {lectLength} <br />
+            <progress value={completed} max={100}></progress>{completed}%
+         </div>
     <div className="lecture-page">
         <div className="left">
             {
@@ -135,6 +176,7 @@ const Lecture = ({ user }) => {
                     disablePictureInPicture
                     disableRemotePlayback
                     autoPlay
+                    onEnded={()=>addProgress(lecture._id)}
                     ></video>
                     <h1>{lecture.title}</h1>
                     <h3>{lecture.description}</h3>
@@ -189,7 +231,11 @@ const Lecture = ({ user }) => {
                         className={`lecture-number ${
                             lecture._id === e._id && "active"
                             }`}>
-                            {i+1}. {e.title}
+                            {i + 1}. {e.title} {""}
+                            {progress && progress[0] && progress[0].completedLectures && progress[0].completedLectures.includes(e._id) && ( 
+                            <span style={{background:"red",padding:"2px",borderRadius:"6px",color:"greenyellow"}}>
+                                <TiTick />
+                            </span>)}
                         </div>
                         {user && user.role==="admin" && (
                             <button 
